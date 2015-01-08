@@ -97,25 +97,35 @@ NSString* const SocketIOException = @"SocketIOException";
 
 - (void) connectToHost:(NSString *)host onPort:(NSInteger)port
 {
-    [self connectToHost:host onPort:port withParams:nil withNamespace:@"" withConnectionTimeout:defaultConnectionTimeout];
+    [self connectToHost:host onPort:port withParams:nil withHeaders: nil withNamespace:@"" withConnectionTimeout:defaultConnectionTimeout];
 }
 
 - (void) connectToHost:(NSString *)host onPort:(NSInteger)port withParams:(NSDictionary *)params
 {
-    [self connectToHost:host onPort:port withParams:params withNamespace:@"" withConnectionTimeout:defaultConnectionTimeout];
+    [self connectToHost:host onPort:port withParams:params withHeaders: nil withNamespace:@"" withConnectionTimeout:defaultConnectionTimeout];
 }
 
 - (void) connectToHost:(NSString *)host
                 onPort:(NSInteger)port
             withParams:(NSDictionary *)params
+         withHeaders:(NSDictionary *)headers
+{
+    [self connectToHost:host onPort:port withParams:params withHeaders: headers withNamespace: @"" withConnectionTimeout:defaultConnectionTimeout];
+}
+
+- (void) connectToHost:(NSString *)host
+                onPort:(NSInteger)port
+            withParams:(NSDictionary *)params
+           withHeaders:(NSDictionary *)headers
          withNamespace:(NSString *)endpoint
 {
-    [self connectToHost:host onPort:port withParams:params withNamespace:endpoint withConnectionTimeout:defaultConnectionTimeout];
+    [self connectToHost:host onPort:port withParams:params withHeaders: headers withNamespace: endpoint withConnectionTimeout:defaultConnectionTimeout];
 }
-
+         
 - (void) connectToHost:(NSString *)host
                 onPort:(NSInteger)port
             withParams:(NSDictionary *)params
+           withHeaders:(NSDictionary *)headers
          withNamespace:(NSString *)endpoint
  withConnectionTimeout:(NSTimeInterval)connectionTimeout
 {
@@ -125,6 +135,7 @@ NSString* const SocketIOException = @"SocketIOException";
         _host = host;
         _port = port;
         _params = params;
+        _headers = headers;
         _endpoint = [endpoint copy];
         
         // create a query parameters string
@@ -149,10 +160,10 @@ NSString* const SocketIOException = @"SocketIOException";
                                                  cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData 
                                              timeoutInterval:connectionTimeout];
         
-        if (_cookies != nil) {
-            DEBUGLOG(@"Adding cookie(s): %@", [_cookies description]);
-            NSDictionary *headers = [NSHTTPCookie requestHeaderFieldsWithCookies:_cookies];
-            [request setAllHTTPHeaderFields:headers];
+        if (headers != nil)  {
+            NSMutableDictionary *newHeaders = [[request allHTTPHeaderFields] mutableCopy];
+            [newHeaders addEntriesFromDictionary: headers];
+            [request setAllHTTPHeaderFields: newHeaders];
         }
         
         [request setHTTPShouldHandleCookies:YES];
@@ -944,7 +955,7 @@ NSString* const SocketIOException = @"SocketIOException";
             NSPredicate *regexTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
             if ([_sid rangeOfString:@"error"].location != NSNotFound || [regexTest evaluateWithObject:_sid])
             {
-                [self connectToHost:_host onPort:_port withParams:_params withNamespace:_endpoint];
+                [self connectToHost:_host onPort:_port withParams:_params withHeaders: _headers withNamespace:_endpoint];
                 return;
             }
             
