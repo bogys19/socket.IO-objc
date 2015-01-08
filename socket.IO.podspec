@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/pkyeck/socket.IO-objc"
   s.license      = 'MIT'
   s.author       = { "Philipp Kyeck" => "philipp@beta-interactive.de" }
-  s.source       = { :git => "https://github.com/mikefogg/socket.IO-objc.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/bogys19/socket.IO-objc.git", :tag => s.version.to_s }
   s.source_files = '*.{h,m}'
   s.requires_arc = true
   s.dependency 'SocketRocket', '~> 0.2'
