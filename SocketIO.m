@@ -166,8 +166,6 @@ NSString* const SocketIOException = @"SocketIOException";
             [request setAllHTTPHeaderFields: newHeaders];
         }
         
-        [request setHTTPShouldHandleCookies:YES];
-        
         _handshake = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
         [_handshake scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
         [_handshake start];
