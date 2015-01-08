@@ -162,6 +162,9 @@ NSString* const SocketIOException = @"SocketIOException";
         
         if (headers != nil)  {
             NSMutableDictionary *newHeaders = [[request allHTTPHeaderFields] mutableCopy];
+            if(!newHeaders) {
+                newHeaders = [NSMutableDictionary dictionary];
+            }
             [newHeaders addEntriesFromDictionary: headers];
             [request setAllHTTPHeaderFields: newHeaders];
         }
